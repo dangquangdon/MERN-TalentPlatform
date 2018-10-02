@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import classnames from "classnames";
 import { Link } from "react-router-dom";
 import { deletePost, addLike, removeLike } from "../../actions/postAction";
+import { importAll } from "../../actions/importImage";
 
 class PostItem extends Component {
   onDeleteClick = id => {
@@ -28,6 +29,9 @@ class PostItem extends Component {
   };
 
   render() {
+    const images = importAll(
+      require.context("../../img/uploads", false, /\.(png|jpe?g|svg)$/)
+    );
     const { auth, post, showAction } = this.props;
     return (
       <div className="card card-body mb-3">
@@ -35,7 +39,7 @@ class PostItem extends Component {
           <div className="col-md-2">
             <Link to={`/user/${post.user}`}>
               <img
-                src={post.avatar}
+                src={images[post.avatar]}
                 alt="avatar"
                 className="rounded-circle d-none d-md-block"
               />
