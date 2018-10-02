@@ -59,7 +59,7 @@ router.get("/", (req, res) => {
 //@access       Public
 router.get("/:id", (req, res) => {
   Post.findById(req.params.id)
-    .then(posts => res.json(posts))
+    .then(post => res.json(post))
     .catch(err => res.status(404).json({ nopost: "This post doesn't exist" }));
 });
 

@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const passport = require("passport");
+const path = require("path");
+const multer = require("multer");
 
 //Load validation
 const validateProfileInput = require("../../validation/profile");
@@ -30,7 +32,7 @@ router.get(
   (req, res) => {
     const errors = {};
     Profile.findOne({ user: req.user.id })
-      .populate("user", ["name", "avatar"])
+      .populate("user", ["name", "avatar", "avatar2"])
       .then(profile => {
         if (!profile) {
           errors.noprofile = "There is no profile for this user";
@@ -47,7 +49,7 @@ router.get(
 router.get("/all", (req, res) => {
   const errors = {};
   Profile.find()
-    .populate("user", ["name", "avatar"])
+    .populate("user", ["name", "avatar", "avatar2"])
     .then(profiles => {
       if (!profiles) {
         errors.noprofile = "No profiles at all";
@@ -66,7 +68,7 @@ router.get("/handle/:handle", (req, res) => {
   Profile.findOne({
     handle: req.params.handle
   })
-    .populate("user", ["name", "avatar"])
+    .populate("user", ["name", "avatar", "avatar2"])
     .then(profile => {
       if (!profile) {
         errors.noprofile = "No profile for this user";
@@ -85,7 +87,7 @@ router.get("/user/:user_id", (req, res) => {
   Profile.findOne({
     user: req.params.user_id
   })
-    .populate("user", ["name", "avatar"])
+    .populate("user", ["name", "avatar", "avatar2"])
     .then(profile => {
       if (!profile) {
         errors.noprofile = "No profile for this user";
@@ -281,14 +283,14 @@ router.delete(
 //@description  Delete education from profile
 //@access       Private
 router.delete(
-  "/education/:exp_id",
+  "/education/:edu_id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     Profile.findOne({ user: req.user.id })
       .then(profile => {
         const removeIndex = profile.education
           .map(item => item.id)
-          .indexOf(req.params.exp_id);
+          .indexOf(req.params.edu_id);
         if (removeIndex > -1) {
           // Splice out of array
           profile.education.splice(removeIndex, 1);
@@ -312,6 +314,70 @@ router.delete(
       User.findOneAndRemove({ _id: req.user.id }).then(() =>
         res.json({ success: true })
       );
+    });
+  }
+);
+
+//UPLOAD
+
+const storage = multer.diskStorage({
+  destination: "./client/src/img/uploads/",
+  filename: function(req, file, callback) {
+    callback(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  }
+});
+
+//Init Upload
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5000000 }, //5Mb
+  fileFilter: function(req, file, callback) {
+    checkFileType(file, callback);
+  }
+}).single("avatar");
+
+//Check file Type:
+function checkFileType(file, callback) {
+  //Allow extensions
+  const filetypes = /jpeg|jpg|png|gif/;
+  //Check extension
+  const extensionName = filetypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+  //Check mime
+  const mimeType = filetypes.test(file.mimetype);
+  if (mimeType && extensionName) {
+    return callback(null, true);
+  } else {
+    return callback("error: Images only !");
+  }
+}
+
+// @route       POST api/profile/upload
+//@description  Upload avatar
+//@access       Private
+router.post(
+  "/upload/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    upload(req, res, err => {
+      if (err) {
+        res.status(404).json(err);
+      } else {
+        if (req.file == undefined) {
+          res.status(404).json({ nofile: "no file selected" });
+        } else {
+          User.findById(req.params.id)
+            .then(user => {
+              user.avatar = req.file.filename;
+              user.save().then(user => res.json(user));
+            })
+            .catch(err => res.json(err));
+        }
+      }
     });
   }
 );

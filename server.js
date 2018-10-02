@@ -8,6 +8,7 @@ const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");
 
 const app = express();
+
 //MIDDLEWARE
 //Body Parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -23,13 +24,17 @@ const db = require("./config/keys").mongoURI;
 
 // Connec to MongoDB
 mongoose
-  .connect(db)
+  .connect(
+    db,
+    {
+      useNewUrlParser: true
+    }
+  )
   .then(() => console.log("MongoDB is connected successfully"))
   .catch(err => console.log(err));
 
-app.get("/", (req, res) => {
-  res.send("Hellooooo !!!");
-});
+// Public folder
+app.use(express.static("./pulic"));
 
 // Use Routes
 app.use("/api/users", users);

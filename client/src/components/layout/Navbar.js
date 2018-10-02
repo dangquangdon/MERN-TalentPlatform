@@ -3,22 +3,39 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authAction";
+import { clearCurrentProfile } from "../../actions/profileAction";
+import { importAll } from "../../actions/importImage";
 
 class Navbar extends React.Component {
   onLogoutClick = e => {
     e.preventDefault();
     this.props.logoutUser();
+    this.props.clearCurrentProfile();
   };
 
   render() {
+    const images = importAll(
+      require.context("../../img/uploads", false, /\.(png|jpe?g|svg)$/)
+    );
+
     const { isAuthenticated, user } = this.props.auth;
 
     const authLinks = (
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
+          <Link className="nav-link" to="/dashboard">
+            Dash Board
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link" to="/feed">
+            Posts
+          </Link>
+        </li>
+        <li className="nav-item">
           <a href="#!" className="nav-link" onClick={this.onLogoutClick}>
             <img
-              src={user.avatar}
+              src={images[user.avatar]}
               alt={user.name}
               style={{ width: "25px", marginRight: "5px" }}
               title="You must have a Gravatar connect to your email to display image"
@@ -74,7 +91,8 @@ class Navbar extends React.Component {
 }
 Navbar.propTypes = {
   logoutUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  clearCurrentProfile: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -83,5 +101,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { logoutUser }
+  { logoutUser, clearCurrentProfile }
 )(Navbar);

@@ -3,6 +3,7 @@ import classnames from "classnames";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authAction";
+import TextFieldGroup from "../common/TextFieldGroup";
 
 class Login extends React.Component {
   state = {
@@ -54,36 +55,29 @@ class Login extends React.Component {
                 Sign in your account & join with others
               </p>
               <form onSubmit={this.onSubmit}>
-                <div className="form-group">
-                  <input
-                    type="email"
-                    name="email"
-                    value={this.state.email}
-                    placeholder="Email Address"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.email
-                    })}
-                    onChange={this.onChangefunc}
-                  />
-                  {errors.email && (
-                    <div className="invalid-feedback">{errors.email}</div>
-                  )}
-                </div>
-                <div className="form-group">
-                  <input
-                    type="password"
-                    name="password"
-                    value={this.state.password}
-                    placeholder="Your Password"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.password
-                    })}
-                    onChange={this.onChangefunc}
-                  />
-                  {errors.password && (
-                    <div className="invalid-feedback">{errors.password}</div>
-                  )}
-                </div>
+                <TextFieldGroup
+                  type="email"
+                  name="email"
+                  value={this.state.email}
+                  placeholder="Email Address"
+                  className={classnames("form-control form-control-lg", {
+                    "is-invalid": errors.email
+                  })}
+                  onChange={this.onChangefunc}
+                  error={errors.email}
+                />
+                <TextFieldGroup
+                  type="password"
+                  name="password"
+                  value={this.state.password}
+                  placeholder="Your Password"
+                  className={classnames("form-control form-control-lg", {
+                    "is-invalid": errors.password
+                  })}
+                  onChange={this.onChangefunc}
+                  error={errors.email}
+                />
+
                 <input
                   type="submit"
                   value="Sign in"
