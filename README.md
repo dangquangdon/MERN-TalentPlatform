@@ -2,8 +2,10 @@
 
 This is a Talent Platform where people can list themselves and companies can choose potential candidates from. This serves as a self-developed project for practicing and learning purpose
 
-The back-end APID is built using [Node.js](https://nodejs.org/) + [Express](http://expressjs.com/).
+The back-end API is built using [Node.js](https://nodejs.org/) + [Express](http://expressjs.com/).
+
 The front-end is built using [React.js](https://github.com/facebook/create-react-app) + [Redux](https://redux.js.org/)
+
 Database is MongoDB hosted on [Mlab](https://mlab.com/)
 
 ## Dependencies
