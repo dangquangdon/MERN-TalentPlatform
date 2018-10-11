@@ -30,7 +30,7 @@ By default the back-end is available at http://localhost:5000 and the client sid
 PORT=8080 node server.js
 ```
 
-## API documentation
+## Talent Platform documentation
 
 The application is a social network of job seekers and designed to connect job seekers together. Everyone can create a profile, update biography, education, experience, list skills. Especially, the appication use Github OAuth API to list out repositories of user once github username is provided. This helps job seekers who are developers to showcase their portfolio.
 
